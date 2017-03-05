@@ -49,6 +49,16 @@ app.get('/todos', function (req, res){
 app.get('/todos/:id', function (req, res){
     var todoId = parseInt(req.params.id, 10);
     
+    db.todo.findById(todoId).then(function (todo) {
+        if (!!todo) { // convert to truthy
+            res.json(todo.toJSON());
+        } else {
+            res.status(404).json(error);
+        }
+        res.json(todo.toJSON());
+    }, function (error) {
+        res.status(500).send();
+    });
     // var matchedTodo;
     // todos.forEach(function (todo) {
     //     if (todoId === todo.id) {
