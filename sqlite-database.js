@@ -21,7 +21,7 @@ var Todo = sequelize.define('todo', {
             len: [1, 250]
         }
     },
-    completed: {
+    isCompleted: {
         type: Sequelize.BOOLEAN,
         allowNull: false,
         defaultValue: false

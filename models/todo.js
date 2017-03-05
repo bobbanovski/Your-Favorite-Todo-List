@@ -7,7 +7,7 @@ module.exports = function (sequelize, DataTypes) { //sequelized instance, dataty
             len: [1, 250]
         }
     },
-    completed: {
+    isCompleted: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: false

@@ -43,7 +43,28 @@ app.get('/about', middleware.requireAuthentication, function(req, res){
 
 //get all todos
 app.get('/todos', function (req, res){
-    res.json(todos);
+    //sequelize
+    var query = req.query;
+    var where = {};
+    if (query.hasOwnProperty('isCompleted') && query.isCompleted === 'true') {
+        where.isCompleted = true;
+    } else if (query.hasOwnProperty('isCompleted') && query.isCompleted === 'false') {
+        where.isCompleted = false;
+    }
+
+    if (query.hasOwnProperty('q') && query.q.length > 0) {
+        where.description = {
+            $like: '%' + query.q + '%'
+        };
+    }
+
+    db.todo.findAll({where: where}).then(function (todos) {
+        res.json(todos);
+    }, function (e) {
+        res.status(500).send();
+    });
+
+    //res.json(todos);
 })
 
 app.get('/todos/:id', function (req, res){
@@ -53,9 +74,8 @@ app.get('/todos/:id', function (req, res){
         if (!!todo) { // convert to truthy
             res.json(todo.toJSON());
         } else {
-            res.status(404).json(error);
-        }
-        res.json(todo.toJSON());
+            res.status(404).send();
+        }        
     }, function (error) {
         res.status(500).send();
     });
@@ -65,13 +85,13 @@ app.get('/todos/:id', function (req, res){
     //         matchedTodo = todo
     //     }
     // });
-    var matchedTodo = _.findWhere(todos, {id: todoId}) //list, search items
+    // var matchedTodo = _.findWhere(todos, {id: todoId}) //list, search items
 
-    if (matchedTodo) {
-        res.json(matchedTodo);
-    } else {
-        res.status(404).send();
-    }
+    // if (matchedTodo) {
+    //     res.json(matchedTodo);
+    // } else {
+    //     res.status(404).send();
+    // }
 })
 
 app.post('/todos', function (req, res) {
