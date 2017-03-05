@@ -116,13 +116,28 @@ app.post('/todos', function (req, res) {
 });
 
 app.delete('/todos/:id', function (req, res) {
-    var todoId = parseInt(req.params.id, 10);
-    var matchedTodo = _.findWhere(todos, {id: todoId});
-    if (!matchedTodo){
-        res.status(404).send();
-    }    
-    todos = _.without(todos, matchedTodo);
-    res.json(todos);
+    var todoId = parseInt(req.params.id, 10);    
+    //sequelize
+    db.todo.destroy({
+        where: {
+            id: todoId
+        }
+    }).then( function (rowsDeleted) {
+        if (rowsDeleted === 0) {
+            res.status(404).json({error: "No todo found"})
+        } else {
+            res.status(204).send(); //success, no data sent back
+        }
+    }, function () {
+        res.status(500).send();
+    });
+
+    // var matchedTodo = _.findWhere(todos, {id: todoId});
+    // if (!matchedTodo){
+    //     res.status(404).send();
+    // }    
+    // todos = _.without(todos, matchedTodo);
+    // res.json(todos);
 });
 
 app.put('/todos/:id', function (req, res) {
