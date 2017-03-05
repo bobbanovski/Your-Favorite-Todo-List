@@ -142,31 +142,48 @@ app.delete('/todos/:id', function (req, res) {
 
 app.put('/todos/:id', function (req, res) {
     var todoId = parseInt(req.params.id, 10);
-    var matchedTodo = _.findWhere(todos, {id: todoId});
-    if (!matchedTodo) {
-        return res.status(404).send();
+    var body = _.pick(req.body, 'description', 'completed');
+    var attributes = {};
+    if (body.hasOwnProperty('isCompleted')) {
+        attributes.isCompleted = body.isCompleted;
     }
-
-    var body = _.pick(req.body,"isCompleted","description")
-    
-    var validAttributes = {};
-    if(body.hasOwnProperty('isCompleted') && _.isBoolean(body.isCompleted)) {
-        validAttributes.isCompleted = body.isCompleted;
-    } else if (body.hasOwnProperty('isCompleted')) { //has isCompleted, not boolean
-        return res.status(400).send();
-    } else {
-        res.status(404).json("error", "todo has no isCompleted specified")
+    if (body.hasOwnProperty('description')) {
+        attributes.description = body.description
     }
-
-    if (body.hasOwnProperty('description') && _.isString(body.description) && body.description.trim().length > 0) {
-        validAttributes.description = body.description;
-    } else if (body.hasOwnProperty('description')) {
-        return res.status(400).send();
-    }
-    
+    db.todo.findById(todoId).then( function (todo) {
+        if (todo){
+            return todo.update(attributes);
+        } else {
+            res.status(404).send
+        }
+    }, function () {
+        res.status(500).send();
+    }).then(function (todo) { //todo with updated attributes
+        res.json(todo.toJSON());
+    }, function (e) {
+        res.status(400).json(e);
+    });
+    // var matchedTodo = _.findWhere(todos, {id: todoId});
+    // if (!matchedTodo) {
+    //     return res.status(404).send();
+    // }
+    // var body = _.pick(req.body,"isCompleted","description")    
+    // var validAttributes = {};
+    // if(body.hasOwnProperty('isCompleted') && _.isBoolean(body.isCompleted)) {
+    //     validAttributes.isCompleted = body.isCompleted;
+    // } else if (body.hasOwnProperty('isCompleted')) { //has isCompleted, not boolean
+    //     return res.status(400).send();
+    // } else {
+    //     res.status(404).json("error", "todo has no isCompleted specified")
+    // }
+    // if (body.hasOwnProperty('description') && _.isString(body.description) && body.description.trim().length > 0) {
+    //     validAttributes.description = body.description;
+    // } else if (body.hasOwnProperty('description')) {
+    //     return res.status(400).send();
+    // }    
     // matchedTodo = _.extend(matchedTodo, validAttributes);
-    _.extend(matchedTodo, validAttributes);
-    res.json(matchedTodo);
+    // _.extend(matchedTodo, validAttributes);
+    // res.json(matchedTodo);
 });
 
 app.post('/users', function (req, res) {
