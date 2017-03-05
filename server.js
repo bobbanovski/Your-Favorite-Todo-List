@@ -67,15 +67,22 @@ app.get('/todos/:id', function (req, res){
 app.post('/todos', function (req, res) {
     var body = _.pick(req.body,"isCompleted","description")
 
+    //Sequelize
+    db.todo.create(body).then(function (todo) {
+        res.json(todo.toJSON());
+    }, function (error) {
+        res.status(400).json(error);
+    });
+
     //ensure datatypes are valid
-    if (!_.isBoolean(body.isCompleted) || !_.isString(body.description) || body.description.trim().length === 0) { //if body not completed
-        return res.status(400).send();
-    }
-    body.description = body.description.trim();
-    body.id = todoNextId++;
-    todos.push(body);
+    // if (!_.isBoolean(body.isCompleted) || !_.isString(body.description) || body.description.trim().length === 0) { //if body not completed
+    //     return res.status(400).send();
+    // }
+    // body.description = body.description.trim();
+    // body.id = todoNextId++;
+    // todos.push(body);
     //console.log('description: ' + body.description);
-    res.json(body);
+    //res.json(body);
 });
 
 app.delete('/todos/:id', function (req, res) {
