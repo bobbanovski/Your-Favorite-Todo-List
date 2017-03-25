@@ -8,18 +8,29 @@ const transport = nodemailer.createTransport({
     },
 });
 
-message = {
-    from: 'SomeDude',
-    to: 'robert.coleman1@uqconnect.edu.au', // comma separated list
-    subject: 'Subject Line',
-    text: 'Text contents.',
-    html: '<b>Text contents.</b>'
-  };
+smtpMail(body, transport)
+{
+    message = 
+        {
+            from: 'SomeDude',
+            to: body.to
+        }
 
-transport.sendMail(message, function(error, info){
-    if (error) {
-      console.log(error);
-    } else {
-      console.log('Sent: ' + info.response);
-    }
-  });
+    transport.sendMail(message, function(error, info){
+        if (error) {
+        console.log(error);
+        } else {
+        console.log('Sent: ' + info.response);
+        }
+    });
+}
+
+// message = {
+//     from: 'SomeDude',
+//     to: 'robert.coleman1@uqconnect.edu.au', // comma separated list
+//     subject: 'Subject Line',
+//     text: 'Text contents.',
+//     html: '<b>Text contents.</b>'
+//   };
+
+
