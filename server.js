@@ -94,6 +94,11 @@ app.get('/todos/:id', function (req, res){
     // }
 })
 
+app.post('/smtp', function (req, res) {
+    var body = _.pick(req.body,"to", "subject", "message")
+    res.json(body);
+});
+
 app.post('/todos', function (req, res) {
     var body = _.pick(req.body,"isCompleted","description")
 
