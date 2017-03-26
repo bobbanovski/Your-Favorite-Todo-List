@@ -1,8 +1,5 @@
 var express = require('express');
 var bodyParser = require('body-parser');
-var _ = require('underscore');
-
-
 
 var db = require('./db.js'); //link to database
 var middleware = require('./middleware'); // import local file, same directory
@@ -96,26 +93,28 @@ app.get('/todos/:id', function (req, res){
     // }
 })
 
+// vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv//
+var _ = require('underscore');
 const nodemailer = require("nodemailer");
 
 app.post('/smtp', function (req, res) {   //mailer service
-    var body = _.pick(req.body,"to", "subject", "message")
+    var body = _.pick(req.body,"email", "serviceName", "password", "to")
     
     //settings for smtp mail service
     const transport = nodemailer.createTransport({
-        service: 'Mailgun',
+        service: body.serviceName,
         auth: {
-            user: 'postmaster@sandbox7c15bb3f259e45a090a98dbd0f1c2f39.mailgun.org',
-            pass: '6dd2e3a5ae71062db54b158cf0b30c95',
+            user: body.email,
+            pass: body.password,
         },
     });
 
     message = {        
         from: 'SomeDude',
         to: body.to, // comma separated list
-        subject: body.subject,
-        text: body.message,
-        html: '<b>' + body.message + '</b>'
+        subject: "Hi Sir",
+        text: "Hello, Hi",
+        html: '<b>Hello, Hi</b>'
     }
     
     transport.sendMail(message, function(error, info){
@@ -128,6 +127,7 @@ app.post('/smtp', function (req, res) {   //mailer service
 
     res.status(204).send();
 });
+// ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^//
 
 app.post('/todos', function (req, res) {
     var body = _.pick(req.body,"isCompleted","description")
